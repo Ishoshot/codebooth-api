@@ -103,12 +103,6 @@ const main = async () => {
     const teams = await user?.teams;
     const teamsIn = await user?.teamsIn;
 
-    const me = teamsIn?.forEach(async (t) => {
-      return await Team.findOne(t.team_id);
-    });
-
-    console.log(me);
-
     res.send({ user, projects, teams, teamsIn });
   });
 
@@ -263,6 +257,31 @@ const main = async () => {
       res.send({ teamMember: null });
       return;
     }
+  });
+
+  /* --------------------------- Remove user to Team --------------------------- */
+  app.post("/team/leave", isAuth, async (req, res) => {
+    const teamMember = await TeamMember.delete({
+      user_id: req.body.user,
+      team_id: req.body.team,
+      team_name: req.body.teamName,
+      status: "accepted",
+    });
+    res.send({ teamMember });
+  });
+
+  /* --------------------------- Update Team Request --------------------------- */
+  app.put("/teamMember/update", isAuth, async (req, res) => {
+    const teamMember = await TeamMember.findOne(req.body.id);
+    if (!teamMember) {
+      res.send({ teamMember: null });
+      return;
+    }
+    teamMember.status = req.body.status;
+    teamMember.request_seen = req.body.request_seen;
+    await teamMember.save();
+
+    res.send({ teamMember });
   });
 
   /* ---------------------------Star User --------------------------- */
