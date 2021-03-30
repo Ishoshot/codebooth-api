@@ -165,7 +165,7 @@ const main = async () => {
     });
 
     if (req.body.name !== "" && flairs.length < 5) {
-      if (exists == undefined) {
+      if (exists == undefined && flairs.length > 1) {
         res.send({ flair: null });
         return;
       }
@@ -182,7 +182,12 @@ const main = async () => {
 
   /* --------------------------- Create a new Team --------------------------- */
   app.post("/team/create", isAuth, async (req, res) => {
-    if (req.body.name !== "") {
+    const exists = await Team.find({
+      where: {
+        name: req.body.name,
+      },
+    });
+    if (req.body.name !== "" && exists.length <= 0) {
       const team = await Team.create({
         name: req.body.name,
         description: req.body.desc,
@@ -209,7 +214,12 @@ const main = async () => {
 
   /* --------------------------- Create a new Project --------------------------- */
   app.post("/project/create", isAuth, async (req, res) => {
-    if (req.body.name !== "") {
+    const exists = await Project.find({
+      where: {
+        name: req.body.name,
+      },
+    });
+    if (req.body.name !== "" && exists.length <= 0) {
       const project = await (Project as any)
         .create({
           name: req.body.name,
