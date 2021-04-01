@@ -72,6 +72,9 @@ const main = async () => {
             created_at: getDate().toString(),
             updated_at: getDate().toString(),
           }).save();
+          if (user == null) {
+            showMessage();
+          }
         }
 
         cb(null, {
@@ -82,6 +85,12 @@ const main = async () => {
       }
     )
   );
+
+  function showMessage() {
+    app.get("/error", isAuth, async (_req, res) => {
+      res.send("GitHub Profile not Fully Set.. Update Profile and Try Again.");
+    });
+  }
 
   app.get("/auth/github", passport.authenticate("github", { session: false }));
 
@@ -122,8 +131,6 @@ const main = async () => {
     const users = await User.find({
       order: { id: "DESC" },
     });
-
-    // const users: User[] = users_.sort(() => Math.random() - 0.5);
 
     res.send({ users });
   });
@@ -279,6 +286,7 @@ const main = async () => {
     }
     teamMember.status = req.body.status;
     teamMember.request_seen = req.body.request_seen;
+    teamMember.updated_at = getDate().toString();
     await teamMember.save();
 
     res.send({ teamMember });
