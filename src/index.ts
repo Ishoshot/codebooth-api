@@ -204,13 +204,21 @@ const main = async () => {
     }
   });
 
-  /* ------------------- Fetch All teams of the Application ------------------- */
+  /* ------------------- Fetch All teams on the Application ------------------- */
   app.get("/teams", isAuth, async (_req, res) => {
     const teams = await Team.find({
       order: { id: "DESC" },
     });
 
     res.send({ teams });
+  });
+
+  /* ------------------- Return a team on the Application ------------------- */
+  app.get("/team/get/:id", isAuth, async (req: any, res) => {
+    const { id } = req.params;
+    const team = await Team.findOne(id);
+
+    res.send({ team });
   });
 
   /* --------------------------- Create a new Project --------------------------- */
