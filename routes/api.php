@@ -1,8 +1,9 @@
 <?php
 
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
 
 
 /*
@@ -20,14 +21,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/auth/redirect', function () {
-    return Socialite::driver('github')->redirect();
+Route::middleware('auth:sanctum')->get('/profile', function (Request $request) {
+    return response()->json($request->user());
 });
 
-Route::get('/auth/callback', function () {
-    $user = Socialite::driver('github')->user();
-
-    return response()->json(["user" => $user]);
-
-    // $user->token
+/* --------------------------- Authentication Routes -------------------------- */
+Route::prefix('auth')->group(function () {
+    Route::get('/redirect', [AuthController::class, 'redirect']);
+    Route::get('/callback', [AuthController::class, 'callback']);
 });
