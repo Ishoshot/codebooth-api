@@ -15,12 +15,14 @@
             </div>
         </div>
 
-        <h1 class="mt-5 text-3xl font-bold">CodeBooth is requesting for permission to access your Github account.</h1>
+        <h1 class="mt-5 text-3xl font-bold">Authorize CodeBooth to access GitHub</h1>
+
+        <h6 class="mt-5 text-lg">If you initiated this authorization from CodeBooth via [Visual Studio Code], click 'Continue' to authorize access to GitHub</h6>
 
         <div class="flex items-center mt-10">
             <form action="{{ route('redirect') }}">
                 <x-button class="py-3 mr-5 bg-green-600 hover:bg-gray-600">
-                    <i class="mr-2 fa fa-check" aria-hidden="true"></i> {{ __('I Authorize') }}
+                    <i class="mr-2 fa fa-check" aria-hidden="true"></i> {{ __('Continue') }}
                 </x-button>
             </form>
 
@@ -28,7 +30,7 @@
             <form action="{{ route('login') }}">
                 @csrf
                 <x-button class="ml-5 bg-red-600 hover:bg-red-800">
-                    <i class="mr-2 fa fa-times" aria-hidden="true"></i> {{ __('I Decline') }}
+                    <i class="mr-2 fa fa-times" aria-hidden="true"></i> {{ __('Decline') }}
                 </x-button>
         </div>
         </form>
