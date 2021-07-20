@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,11 +23,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->get('/profile', function (Request $request) {
-    return response()->json($request->user());
+    $user = User::all()->first();
+    return response()->json($user->tokens()->first());
 });
 
 /* --------------------------- Authentication Routes -------------------------- */
 Route::prefix('auth')->group(function () {
-    Route::get('/redirect', [AuthController::class, 'redirect']);
-    Route::get('/callback', [AuthController::class, 'callback']);
+    Route::get('/github', [AuthController::class, 'login']);
+    Route::get('/github/redirect', [AuthController::class, 'redirect'])->name('redirect');
+    Route::get('/github/callback', [AuthController::class, 'callback'])->name('callback');
 });

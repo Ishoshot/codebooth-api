@@ -34,7 +34,7 @@ return [
         'client_id' => env('GITHUB_CLIENT_ID'),
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         // 'redirect' => 'http://localhost:3002/auth/github/callback',
-        'redirect' => 'http://codebooth-api.test/api/auth/callback',
+        'redirect' => 'http://codebooth-api.test/api/auth/github/callback',
     ],
 
 ];

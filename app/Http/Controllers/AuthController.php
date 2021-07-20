@@ -12,6 +12,17 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
+
+    /**
+     * Returns Auth Confirmation View.
+     *
+     */
+    public function login()
+    {
+        return view('github.login');
+    }
+
+
     /**
      * Redirect to Github for Authentication.
      *
@@ -36,9 +47,9 @@ class AuthController extends Controller
                     'GitHub profile not fully set.. Please update your profile and try again.',
                 ]);
             } else {
-                $user = User::where('email', $payload->user['email'])->first();
-                if ($user !== null) {
-                    $user->update([
+                $oldUser = User::where('email', $payload->user['email'])->first();
+                if ($oldUser !== null) {
+                    $oldUser->update([
                         'name' => $payload->user['name'],
                         'email' => $payload->user['email'],
                         'image' => $payload->user['avatar_url'],
@@ -48,7 +59,7 @@ class AuthController extends Controller
                         'description' => $payload->user['bio'],
                     ]);
                 } else {
-                    $user = User::firstOrCreate([
+                    User::firstOrCreate([
                         'github_id' => $payload->user['id'],
                         'name' => $payload->user['name'],
                         'email' => $payload->user['email'],
@@ -64,9 +75,7 @@ class AuthController extends Controller
                 // Create a Token For the User
                 if (Auth::attempt(['email' => $payload->user['email'], 'password' => $payload->user['email']])) {
                     $user = Auth::user();
-                    $token = $user->createToken(env("APP_NAME"));
-                    $user['token'] = $token->plainTextToken;
-                    // return response()->json(["user" => $user], 200);
+                    $token = $user->createToken(env("APP_NAME") ?? "CodeBooth");
                     $clientCallback =  "http://localhost:54321/auth/" . $token->plainTextToken;
                     return redirect()->away($clientCallback);
                 } else {
