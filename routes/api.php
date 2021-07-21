@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
@@ -23,8 +24,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->get('/profile', function (Request $request) {
-    $user = User::all()->first();
-    return response()->json($user->tokens()->first());
+
+    return response()->json(Auth::user(), 200);
 });
 
 /* --------------------------- Authentication Routes -------------------------- */
@@ -32,4 +33,12 @@ Route::prefix('auth')->group(function () {
     Route::get('/github', [AuthController::class, 'login']);
     Route::get('/github/redirect', [AuthController::class, 'redirect'])->name('redirect');
     Route::get('/github/callback', [AuthController::class, 'callback'])->name('callback');
+});
+
+
+/* --------------------------- Flair Routes -------------------------- */
+Route::name('flair')->middleware('auth:sanctum')->group(function () {
+    Route::get('/user/flairs', [FlairController::class, 'index'])->name('user_index');
+    Route::post('user/flair', [FlairController::class, 'store'])->name('create');
+    Route::delete('/user/flair/{flair}', [FlairController::class, 'destroy'])->name('delete');
 });
