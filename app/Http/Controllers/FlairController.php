@@ -47,7 +47,7 @@ class FlairController extends Controller
         try {
             /* ----------- Validate Incoming Request ---------- */
             $validator = Validator::make($request->all(), [
-                'name' => ['bail', 'required', 'unique:flairs,deleted_at,NULL', 'min:1'],
+                'name' => ['bail', 'required', 'unique:flairs,name,{$id},id,deleted_at,NULL', 'min:2'],
             ]);
 
             if ($validator->fails()) {
