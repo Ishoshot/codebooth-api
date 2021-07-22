@@ -23,10 +23,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:sanctum')->get('/profile', function (Request $request) {
-
-    return response()->json(Auth::user(), 200);
-});
 
 /* --------------------------- Authentication Routes -------------------------- */
 Route::prefix('auth')->group(function () {
@@ -37,8 +33,19 @@ Route::prefix('auth')->group(function () {
 
 
 /* --------------------------- Flair Routes -------------------------- */
-Route::name('flair')->middleware('auth:sanctum')->group(function () {
-    Route::get('/user/flairs', [FlairController::class, 'index'])->name('user_index');
-    Route::post('user/flair', [FlairController::class, 'store'])->name('create');
-    Route::delete('/user/flair/{flair}', [FlairController::class, 'destroy'])->name('delete');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user/flairs', [FlairController::class, 'index']);
+    Route::post('user/flair', [FlairController::class, 'store']);
+    Route::delete('/user/flair/{flair}', [FlairController::class, 'destroy']);
+});
+
+/* --------------------------------- Profile -------------------------------- */
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'profile']);
+});
+
+
+/* --------------------------------- Activity -------------------------------- */
+Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/user/activity/{activity}', [ActivityController::class, 'update']);
 });

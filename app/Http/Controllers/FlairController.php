@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Flair;
+use App\Services\ActivityService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,7 +65,12 @@ class FlairController extends Controller
                 "name" => $request->name
             ]);
 
-            return response()->json(["flair" => $flair], 201);
+            $activity = (new ActivityService())->logActivity([
+                "title" => "New Flair Created",
+                "description" => "This is just testing the Log Functionality"
+            ]);
+
+            return response()->json(["flair" => $flair, "activity" => $activity], 201);
         } catch (Exception $exception) {
             Log::error('Create Flair: Error Encountered: ' . $exception->getMessage());
         }
@@ -114,10 +120,15 @@ class FlairController extends Controller
     {
         try {
             $flair->delete();
+
+            $activity = (new ActivityService())->logActivity([
+                "title" => "Flair Deleted",
+                "description" => "Delete This is just testing the Log Functionality"
+            ]);
         } catch (Exception $exception) {
             Log::error('Delete Flair: Error Encountered: ' . $exception->getMessage());
         } finally {
-            return response()->json(["flair" => $flair], 200);
+            return response()->json(["flair" => $flair, "activity" => $activity], 200);
         }
     }
 }

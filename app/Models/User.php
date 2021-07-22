@@ -43,4 +43,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Flair::class);
     }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
+
+    public function getActivities()
+    {
+        return $this->hasMany(Activity::class)->latest()->take(15)->get();
+    }
 }
