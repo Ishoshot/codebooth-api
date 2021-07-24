@@ -20,7 +20,7 @@ class FlairController extends Controller
     public function index()
     {
         try {
-            $flairs = Auth::user()->flairs()->get();
+            $flairs = Auth::user()->flairs;
             return response()->json(['flairs' => $flairs], 200);
         } catch (Exception $exception) {
             Log::error('Fetch Flairs: Error Encountered: ' . $exception->getMessage());
@@ -58,7 +58,7 @@ class FlairController extends Controller
             $flairs = Auth::user()->flairs();
 
             if ($flairs->count() >= 5) {
-                return response()->json(["flair" => null], 400);
+                return response()->json(["flair" => null, "message" => "Maximum number of Flair reached"], 400);
             }
 
             $flair = $flairs->create([
@@ -67,7 +67,9 @@ class FlairController extends Controller
 
             $activity = (new ActivityService())->logActivity([
                 "title" => "New Flair Created",
-                "description" => "This is just testing the Log Functionality"
+                "entity" => "Flair",
+                "action" => "Create",
+                "description" => "Flair: $flair->name was successfully created"
             ]);
 
             return response()->json(["flair" => $flair, "activity" => $activity], 201);
@@ -123,7 +125,10 @@ class FlairController extends Controller
 
             $activity = (new ActivityService())->logActivity([
                 "title" => "Flair Deleted",
-                "description" => "Delete This is just testing the Log Functionality"
+                "entity" => "Flair",
+                "action" => "Delete",
+                "description" => "Flair: $flair->name was successfully deleted"
+
             ]);
         } catch (Exception $exception) {
             Log::error('Delete Flair: Error Encountered: ' . $exception->getMessage());

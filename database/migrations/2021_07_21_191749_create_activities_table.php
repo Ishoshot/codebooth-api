@@ -17,6 +17,8 @@ class CreateActivitiesTable extends Migration
             $table->id();
             $table->unsignedBigInteger("user_id");
             $table->string("title");
+            $table->string("entity");
+            $table->string("action");
             $table->string("description");
             $table->boolean('read_at')->default(false);
             $table->timestamps();

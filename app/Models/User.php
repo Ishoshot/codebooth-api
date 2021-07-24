@@ -51,6 +51,6 @@ class User extends Authenticatable
 
     public function getActivities()
     {
-        return $this->hasMany(Activity::class)->latest()->take(15)->get();
+        return $this->hasMany(Activity::class)->latest()->take(25)->get();
     }
 }

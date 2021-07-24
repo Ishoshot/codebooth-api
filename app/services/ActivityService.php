@@ -17,6 +17,8 @@ class ActivityService
 
         $activity = Auth::user()->activities()->create([
             "title" => $title,
+            "entity" => $entity,
+            "action" => $action,
             "description" => $description,
             "read_at" => false
         ]);
