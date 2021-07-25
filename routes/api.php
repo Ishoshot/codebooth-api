@@ -29,6 +29,7 @@ Route::prefix('auth')->group(function () {
     Route::get('/github', [AuthController::class, 'login']);
     Route::get('/github/redirect', [AuthController::class, 'redirect'])->name('redirect');
     Route::get('/github/callback', [AuthController::class, 'callback'])->name('callback');
+    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 

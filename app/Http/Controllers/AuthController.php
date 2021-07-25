@@ -44,43 +44,48 @@ class AuthController extends Controller
 
             if ($payload == null || $payload->user == null) {
                 return response()->json([
-                    'GitHub profile not fully set.. Please update your profile and try again.',
+                    "error" => 'GitHub profile not fully set.. Please update your profile and try again.',
+                ]);
+            }
+
+            $oldUser = User::where('email', $payload->user['email'])->first();
+
+            if ($oldUser) {
+                $oldUser->update([
+                    'name' => $payload->user['name'],
+                    'email' => $payload->user['email'],
+                    'image' => $payload->user['avatar_url'],
+                    'github_url' => $payload->user['html_url'],
+                    'location' => $payload->user['location'],
+                    'company' => $payload->user['company'],
+                    'description' => $payload->user['bio'],
                 ]);
             } else {
-                $oldUser = User::where('email', $payload->user['email'])->first();
-                if ($oldUser !== null) {
-                    $oldUser->update([
-                        'name' => $payload->user['name'],
-                        'email' => $payload->user['email'],
-                        'image' => $payload->user['avatar_url'],
-                        'github_url' => $payload->user['html_url'],
-                        'location' => $payload->user['location'],
-                        'company' => $payload->user['company'],
-                        'description' => $payload->user['bio'],
-                    ]);
-                } else {
-                    User::firstOrCreate([
-                        'github_id' => $payload->user['id'],
-                        'name' => $payload->user['name'],
-                        'email' => $payload->user['email'],
-                        'password' => Hash::make($payload->user['email']),
-                        'image' => $payload->user['avatar_url'],
-                        'github_url' => $payload->user['html_url'],
-                        'location' => $payload->user['location'],
-                        'company' => $payload->user['company'],
-                        'description' => $payload->user['bio'],
-                    ]);
-                }
+                User::create([
+                    'github_id' => $payload->user['id'],
+                    'name' => $payload->user['name'],
+                    'email' => $payload->user['email'],
+                    'password' => Hash::make($payload->user['email']),
+                    'image' => $payload->user['avatar_url'],
+                    'github_url' => $payload->user['html_url'],
+                    'location' => $payload->user['location'],
+                    'company' => $payload->user['company'],
+                    'description' => $payload->user['bio'],
+                ]);
+            }
 
-                // Create a Token For the User
-                if (Auth::attempt(['email' => $payload->user['email'], 'password' => $payload->user['email']])) {
-                    $user = Auth::user();
-                    $token = $user->createToken(env("APP_NAME") ?? "CodeBooth");
-                    $clientCallback =  "http://localhost:54321/auth/" . $token->plainTextToken;
-                    return redirect()->away($clientCallback);
-                } else {
-                    return response()->json(["error" => "User Not Authorised"], 401);
-                }
+            $email = $payload->user['email'];
+
+            $user = User::where('email', $email)->first();
+
+            // Create a Token For the User
+            if (Auth::attempt(['email' => $user->email, 'password' => $user->email])) {
+                $user = Auth::user();
+                $token = $user->createToken($user->email);
+                $clientCallback =  "http://localhost:54321/auth/" . $token->plainTextToken;
+                return redirect($clientCallback);
+            } else {
+                return response()->json(["error" => "User Not Authorised"], 401);
             }
         } catch (Exception $exception) {
             Log::error(
@@ -95,6 +100,22 @@ class AuthController extends Controller
     {
         Auth::user()->tokens()->delete();
 
-        return response()->json(["Logged Out"], 200);
+        return response()->json(["logged Out"], 200);
     }
+
+    // public function authenticate($email)
+    // {
+    //     $user = User::where('email', $email)->first();
+
+    //     // Create a Token For the User
+    //     if (Auth::attempt(['email' => $user->email, 'password' => $user->email])) {
+    //         $user = Auth::user();
+    //         $token = $user->createToken($user->email);
+
+    //         $clientCallback =  "http://localhost:54321/auth/" . $token->plainTextToken;
+    //         return redirect($clientCallback);
+    //     } else {
+    //         return response()->json(["error" => "User Not Authorised"], 401);
+    //     }
+    // }
 }
