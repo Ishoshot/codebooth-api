@@ -57,4 +57,5 @@ Route::middleware('auth:sanctum')->prefix('users')->group(function () {
     Route::get('/{user}/info', [UserController::class, 'show']);
     Route::post('/{user}/follow', [UserController::class, 'follow']);
     Route::delete('/{user}/unfollow', [UserController::class, 'unfollow']);
+    Route::post('/preference', [UserController::class, 'update']);
 });

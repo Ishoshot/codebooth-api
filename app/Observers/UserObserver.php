@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Mail\Onboarded;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class UserObserver
@@ -16,6 +17,7 @@ class UserObserver
      */
     public function created(User $user)
     {
+        Cache::forget('users');
         Mail::to($user)->queue(new Onboarded($user));
     }
 
