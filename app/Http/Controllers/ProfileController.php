@@ -13,7 +13,7 @@ class ProfileController extends Controller
      */
     public function profile()
     {
-        $user = Auth::user();
+        $user = Auth::user()->withCount(['followers', 'follows'])->first();
         $user['activities'] = $user->getActivities();
         $user['flairs'] = $user->flairs;
         return response()->json(["user" => $user], 200);

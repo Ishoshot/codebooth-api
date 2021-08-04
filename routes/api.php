@@ -50,3 +50,11 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/activity/{activity}', [ActivityController::class, 'update']);
 });
+
+/* --------------------------------- Users -------------------------------- */
+Route::middleware('auth:sanctum')->prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index']);
+    Route::get('/{user}/info', [UserController::class, 'show']);
+    Route::post('/{user}/follow', [UserController::class, 'follow']);
+    Route::delete('/{user}/unfollow', [UserController::class, 'unfollow']);
+});

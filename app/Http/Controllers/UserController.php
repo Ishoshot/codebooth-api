@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Notifications\UserFollowed;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -13,7 +16,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+
+        $users = User::where('id', '!=', Auth::user()->id)->inRandomOrder()->get();
+
+        return response()->json(['users' => $users]);
     }
 
     /**
@@ -40,12 +46,14 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-        //
+        $user = User::with(['flairs'])->withCount(['followers', 'follows'])->where('id', '=', $user->id)->first();
+        $user['isFollowingUser'] = Auth::user()->isFollowing($user->id);
+        return response()->json(["user" => $user], 200);
     }
 
     /**
@@ -80,5 +88,31 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function follow(User $user)
+    {
+        $follower = auth()->user();
+        if ($follower->id == $user->id) {
+            return response()->json(["message" => "You can't follow yourself"], 400);
+        }
+        if (!$follower->isFollowing($user->id)) {
+            $follower->follow($user->id);
+
+            // sending a notification
+            // $user->notify(new UserFollowed($follower));
+            return response()->json(["message" => "You are now friends with {$user->name}"], 200);
+        }
+        return response()->json(["message" => "You are already following {$user->name}"], 400);
+    }
+
+    public function unfollow(User $user)
+    {
+        $follower = auth()->user();
+        if ($follower->isFollowing($user->id)) {
+            $follower->unfollow($user->id);
+            return response()->json(["message" => "You are no longer friends with {$user->name}"], 200);
+        }
+        return response()->json(["message" => "You are not following {$user->name}"], 400);
     }
 }
